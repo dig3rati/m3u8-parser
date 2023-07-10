@@ -127,6 +127,18 @@ enum MediaSegmentTag implements Tag<MediaSegment, MediaSegment.Builder> {
         }
     },
 
+    EXT_X_KEY {
+        @Override
+        public void read(MediaSegment.Builder builder, String attributes, ParsingMode parsingMode) throws PlaylistParserException {
+            builder.segmentKey(SegmentKeyAttribute.parse(attributes, parsingMode));
+        }
+
+        @Override
+        public void write(MediaSegment mediaSegment, TextBuilder textBuilder) {
+            mediaSegment.segmentKey().ifPresent(key -> textBuilder.addTag(tag(), key, SegmentKeyAttribute.attributeMap));
+        }
+    },
+
     EXTINF {
         @Override
         public void read(MediaSegment.Builder builder, String attributes, ParsingMode parsingMode) {
@@ -162,18 +174,6 @@ enum MediaSegmentTag implements Tag<MediaSegment, MediaSegment.Builder> {
         @Override
         public void write(MediaSegment mediaSegment, TextBuilder textBuilder) {
             mediaSegment.byteRange().ifPresent(value -> textBuilder.addTag(tag(), ParserUtils.writeByteRange(value)));
-        }
-    },
-
-    EXT_X_KEY {
-        @Override
-        public void read(MediaSegment.Builder builder, String attributes, ParsingMode parsingMode) throws PlaylistParserException {
-            builder.segmentKey(SegmentKeyAttribute.parse(attributes, parsingMode));
-        }
-
-        @Override
-        public void write(MediaSegment mediaSegment, TextBuilder textBuilder) {
-            mediaSegment.segmentKey().ifPresent(key -> textBuilder.addTag(tag(), key, SegmentKeyAttribute.attributeMap));
         }
     },
 
